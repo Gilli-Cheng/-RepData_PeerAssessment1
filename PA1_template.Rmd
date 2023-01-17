@@ -1,8 +1,9 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
+title: 'Reproducible Research: Peer Assessment 1'
+output:
   html_document:
-    keep_md: true
+    keep_md: yes
+  pdf_document: default
 ---
 
 
@@ -68,10 +69,10 @@ dates_steps$dates <- as.POSIXct(dates_steps$dates)
 
 dates_steps$steps[is.na(dates_steps$steps)] <- 0
 
-ggplot(data = dates_steps, aes(dates, steps)) + 
-        labs(title = "Total number of steps taken each day") +
-        geom_col(fill = "pink", alpha = 3/4) + theme_bw() +
-        theme(plot.title = element_text(hjust = 0.5))
+ggplot(data = dates_steps, aes(steps)) + 
+        labs(title = "Total number of steps per day") +
+        geom_histogram(fill = "pink",color = "grey", alpha = 3/4, binwidth = 1000) +
+        theme_bw() + theme(plot.title = element_text(hjust = 0.5))
 
 
 ```
@@ -118,10 +119,14 @@ for(i in 1:length(byinterval)){
 names(mean_per_interval) <- "mean_per_interval"
 interval_mean <- cbind(intervals, mean_per_interval)
 
+interval_mean$intervals <- as.numeric(interval_mean$intervals)
 
-with(interval_mean,plot(x = intervals, y = mean_per_interval, type = "l",
-                        xlab = "intervals of a day", ylab = "average of steps", 
-                        col = "pink", lwd = 2))
+ggplot(data = interval_mean, aes(intervals, mean_per_interval)) + 
+        geom_line(color = "pink", linewidth = 1.2) + theme_bw() +
+        labs(title = "Average number of steps by time of day") + 
+        theme(plot.title = element_text(hjust = 0.5)) + 
+        xlab("intervals of a day") + ylab("average of steps")
+
 
 ```
 
@@ -171,7 +176,7 @@ sum(is.na(input_step$steps))
 dates_steps_2 <- aggregate(steps ~ date, input_step, sum)
 
 ggplot(data = dates_steps_2, aes(date, steps)) + 
-        labs(title = "Total number of steps taken each day NA replaced ver.") +
+        labs(title = "Total number of steps taken each day") +
         geom_col(fill = "lightblue", alpha = 3/4) + theme_bw() +
         theme(plot.title = element_text(hjust = 0.5))
 ```
