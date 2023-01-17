@@ -1,0 +1,137 @@
+rm(list = ls())
+
+library("tidyr")
+library("dplyr")
+library("ggplot2")
+# library("lubridate")
+
+data <- read.csv(unzip("activity.zip"))
+
+str(data)
+data$date <- as.POSIXct(data$date)
+dates <- levels(as.factor(data$date)) # Oct 1 to Nov 31
+
+# library(stringr)
+# 
+# data$interval <- str_pad(string = data$interval, pad = "0", 
+#                          width = max(nchar(data$interval)), side = "left")
+# 
+# interval_break <- str_split(data$interval, "")
+# time <- c()
+# for(i in 1:length(interval_break)){
+#         
+#         blank <- paste(interval_break[[i]][1],interval_break[[i]][2], " ", 
+#               interval_break[[i]][3], interval_break[[i]][4] , sep = "")
+#         time <- rbind(time, blank)
+# 
+# }
+# time <- hm(time)
+# data$interval <- time
+
+data <- tbl_df(data)
+str(data)
+data
+
+# 1. What is mean total number of steps taken per day?
+
+# Make a histogram of the total number of steps taken each day
+# 
+# Calculate and report the mean and median total number of steps taken per day
+
+a <- split(data, data$date)
+
+
+dates_steps <- data.frame()
+
+for(i in 1:length(dates)){
+        stepsum <- sum(a[[i]][1])
+        dates_steps <- rbind(dates_steps, stepsum)
+}
+
+names(dates_steps)[1] <- "steps"
+dates_steps <- cbind(dates, dates_steps)
+dates_steps$dates <- as.POSIXct(dates_steps$dates)
+str(dates_steps)
+
+
+ggplot(data = dates_steps, aes(dates, steps)) + 
+        geom_col(fill = "pink", alpha = 3/4) + theme_bw()
+
+
+mean_day <- data.frame()
+median_day <- data.frame()
+
+for(i in 1:length(dates)){
+        stepmean <- mean(a[[i]]$steps)
+        mean_day <- rbind(mean_day, stepmean)
+        
+        stepmedian <- median(a[[i]]$steps)
+        median_day <- rbind(median_day, stepmedian)
+}
+
+mean_median <- cbind(mean_day, median_day)
+names(mean_median) <- c("mean", "median")
+
+all <- cbind(dates_steps, mean_median)
+
+print(all[-2])
+
+
+# 2. What is the average daily activity pattern?
+# 
+# Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and 
+# the average number of steps taken, averaged across all days (y-axis)
+# 
+# Which 5-minute interval, on average across all the days in the dataset, 
+# contains the maximum number of steps?
+
+
+b <- split(data, data$interval)
+intervals <- levels(as.factor(data$interval))
+mean_per_interval <- data.frame()
+
+for(i in 1:length(b)){
+        means <- mean(b[[i]]$steps, na.rm = T)
+        mean_per_interval <- rbind(mean_per_interval, means)
+}
+
+names(mean_per_interval) <- "mean_per_interval"
+interval_mean <- cbind(intervals, mean_per_interval)
+
+interval_mean[which.max(interval_mean$mean_per_interval),]
+
+
+with(interval_mean,plot(x = intervals, y = mean_per_interval, 
+                        type = "l", ylab = "mean steps", col = "pink", lwd = 2))
+
+# Imputing missing values
+# Note that there are a number of days/intervals where there are missing values (coded as NA). 
+# The presence of missing days may introduce bias into some calculations or summaries of the data.
+# 
+# Calculate and report the total number of missing values in the dataset
+# (i.e. the total number of rows with NAs)
+
+summary(data)
+# only NA in steps
+sum(is.na(data$steps))
+
+# Devise a strategy for filling in all of the missing values in the dataset. 
+# The strategy does not need to be sophisticated. For example, 
+# you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
+
+if(data$steps == NA){
+        
+}
+
+for(){
+all[i,][[2]]
+
+sub(NA, all[])
+} 
+# Create a new dataset that is equal to the original dataset but with the missing data filled in.
+# 
+# Make a histogram of the total number of steps taken each day 
+# and Calculate and report the mean and median total number of steps taken per day. 
+# Do these values differ from the estimates from the first part of the assignment? 
+# What is the impact of imputing missing data on the estimates of the total daily number of steps?
+

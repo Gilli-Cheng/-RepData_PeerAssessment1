@@ -1,0 +1,89 @@
+library("lattice")
+library(datasets)
+xyplot(Ozone ~Wind, data = airquality)
+airquality <- transform(airquality, Month = factor(Month))
+xyplot(Ozone ~Wind|Month, data = airquality, layout = c(5,1))
+tapply(airquality$Month,with(airquality, plot(Wind, Ozone)))
+with(airquality, plot(Wind, Ozone))
+a <- airquality[airquality$Month == 5,]
+b <- airquality[airquality$Month == 6,]
+
+install.packages("ggplot2")
+library("ggplot2")
+data("mpg")
+# rm(list = "mtcars","airquality")
+qplot(displ, hwy, data = mpg, facets = . ~ drv)
+qplot(hwy,data = mpg, fill = drv)
+qplot(hwy,data = mpg, geom = "density", fill = drv)
+
+qplot(displ, hwy, data = mpg)
+qplot(displ, hwy, data = mpg, facets = . ~ cyl, geom = c("point"))
+
+g <- ggplot(mpg, aes(displ, hwy))
+g+geom_point(color = "steel blue", size = 2, alpha = 1/2)+geom_smooth(method = "lm", 
+formula = y ~ x,color = "yellow")+facet_grid(. ~ drv)
+
+g+geom_point(color = "steel blue", size = 3, alpha = 1/4)+geom_smooth(method = "lm", 
+formula = y ~ x,color = "yellow")
+
+g+geom_point(aes(color = drv), size = 3, alpha = 1/4)+geom_smooth(method = "lm", 
+formula = y ~ x,color = "yellow")
+
+g <- ggplot(mpg, aes(displ, hwy))
+g + geom_point(aes(color = drv), size = 3, alpha = 1/4)+theme(plot.title = element_text(hjust = 0.5)) + 
+        labs(title = "MPG datasets")+
+        geom_smooth(size = 4, linetype = 3, method = "lm", se = F)
+
+g <- ggplot(data = mpg, aes(displ, hwy))
+g + geom_point(aes(color = drv)) + theme_minimal(base_size = 17,base_family = "serif")
+?theme_bw
+str(theme_get())
+a <- windowsFonts()
+
+testdata <- data.frame(x = 1:100, y = rnorm(100))
+testdata[50,2] <- 10
+with(testdata, plot(x,y, type = "l", ylim = c(-3,3)))
+
+p <- ggplot(data = testdata, aes(x,y))
+p + geom_line()
+p + geom_line() + ylim(-3,3)
+p + geom_line() + coord_cartesian(ylim = c(-3,3)) 
+#coord is like zooming the plot with the limits you want
+# directly using ylim will be like subsetting
+
+cutpoints <- quantile(mpg$cty,seq(0,1,length =4), na.rm = T)
+?seq
+quantile(mpg$cty, probs = c(0,0.33,0.66,1))
+
+mpg$cty_g <- cut(mpg$cty, cutpoints) 
+levels(mpg$cty_g)
+
+mpg <- subset(mpg,mpg$cyl != 5)
+plot <- ggplot(data = mpg, aes(displ, hwy))  
+plot + geom_point(color = "steel blue",alpha = 1/4) + 
+        geom_smooth(method = "lm", color = "yellow", se = F) +
+        labs(title = "title")+labs(x = "Displ")+labs(y = "Hwy")+
+        theme(plot.title = element_text(hjust = 0.5))+
+        facet_grid(. ~ cty_g)+
+        theme_bw(base_family =  "serif")
+
+# plot + geom_point(color = "steel blue",alpha = 1/4) + 
+#         +         geom_smooth(method = "lm", color = "yellow",formula = y ~ x, se = F) +
+#         +         theme_bw(base_family =  "serif")+
+#         +         theme(plot.title = element_text(hjust = 0.5))+
+#         +         labs(title = "title")+labs(x = "Displ")+labs(y = "Hwy")+
+#         +         facet_grid(. ~ cty_g)
+
+# first the theme then the element_text hjust setting 
+# and the title will be in the middle
+
+
+plot + geom_point(alpha = 1/3,color = "pink")+
+        facet_wrap(cyl ~ cty_g, nrow = 3, ncol = 3)+
+        geom_smooth(method = "lm", se = F, col = "yellow")+
+        theme_light(base_family = "serif", base_size = 12)+
+        labs(x = "DISPL", y = "HWY")+
+        labs(title = "TITLE")+
+        theme(plot.title = element_text(hjust = 0.5))
+
+        
